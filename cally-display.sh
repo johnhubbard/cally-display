@@ -32,6 +32,32 @@ dot2png()
     dot -Grankdir=LR -Tpng -o ${FILENAME}
 }
 
+cally-display-help()
+{
+    echo "----------------------------------------------"
+    echo "cally-display() --help:"
+    echo
+    echo "Usage:"
+    echo " cally-display [options]"
+    echo " cally-display"
+    echo "     [-r | --caller <function_name>]"
+    echo "     [-e | --callee <function_name>]"
+    echo "     [-p | --prefix <output file name prefix>]"
+    echo "     [-s | --suffix <output file name suffix>]"
+    echo "     [-d | --dir <directory to search for .expand files>]"
+    echo "                  (this is a recursive search)"
+    echo "     [-x | --show] (show the generated graph in the default browser)"
+    echo "     [-m | --max-depth N] (passed through to cally.py)"
+    echo
+    echo "Examples:"
+    echo "    cally-display -d mm -m 3 --callee __get_user_pages -x"
+    echo
+    echo "----------------------------------------------"
+    echo "cally.py --help:"
+    cally --help
+    echo "----------------------------------------------"
+}
+
 cally-display()
 {
     # Intercept some of the arguments, in order to construct a reasonable .png
@@ -46,8 +72,9 @@ cally-display()
     USER_SUFFIX=
     USER_PREFIX=
     PASS_THROUGH_OPTIONS=
-    DIR=$PWD
-    SHOW_IN_BROWSER=false
+    DIR="$PWD"
+    SHOW_IN_BROWSER=0
+    HELP=0
 
     while(true); do
         case "$1" in
@@ -71,25 +98,46 @@ cally-display()
                 USER_SUFFIX="_${2}";
                 shift 2
             ;;
-            "-D" | "--dir" )
+            "-d" | "--dir" )
                 DIR="$2";
                 shift 2
             ;;
             "-x" | "--show" )
-                SHOW_IN_BROWSER=true;
+                SHOW_IN_BROWSER=1;
                 shift 1
             ;;
-            "-h" | "-d" | "--no-externs" )
+            "-d" | "--no-externs" )
                 PASS_THROUGH_OPTIONS="$PASS_THROUGH_OPTIONS $1";
                 shift 1
             ;;
-            "--max-depth" | "-f" | "-e" )
+            "-f" | "-e" )
                 PASS_THROUGH_OPTIONS="$PASS_THROUGH_OPTIONS $1 $2";
                 shift 2
+            ;;
+            "-m" | "--max-depth" )
+                PASS_THROUGH_OPTIONS="$PASS_THROUGH_OPTIONS --max-depth $2";
+                shift 2
+            ;;
+            "-h" | "--help" )
+                HELP=1;
+                shift 1
             ;;
             *) break;;
         esac
     done
+
+    if [ $HELP -eq 1 ]; then
+        cally-display-help
+        return
+    fi
+
+    if [  -z "$FUNCTION" ]; then
+        echo
+        echo "ERROR: Please provide either --caller or --callee arguments."
+        echo
+        cally-display-help
+        return
+    fi
 
     if [ -z "$CALLY" ]; then
         echo "Missing prerequisite: set CALLY=/path-to/cally.py"
@@ -116,7 +164,7 @@ cally-display()
     echo "Input directory:     $DIR"
 
     callyfiles $DIR | xargs $CALLY $CALLY_OPTIONS | dot2png $FILENAME
-    if [ "$SHOW_IN_BROWSER" = "true" ]; then
+    if [ $SHOW_IN_BROWSER -eq 1 ]; then
         xdg-open $FILENAME
     fi
 }
