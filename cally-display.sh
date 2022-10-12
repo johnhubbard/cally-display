@@ -37,6 +37,10 @@ cally-display-help()
     echo "----------------------------------------------"
     echo "cally-display() --help:"
     echo
+    echo "Prerequisites:"
+    echo "    * User space: use gcc, and set: CFLAGS=-fdump-rtl-expand"
+    echo "    * Linux kernel: use gcc and set: KCFLAGS=-fdump-rtl-expand"
+    echo
     echo "Usage:"
     echo " cally-display [options]"
     echo " cally-display"
