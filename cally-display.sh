@@ -12,7 +12,7 @@
 #    source cally-display.sh
 #
 #    cd $HOME/kernel_work/linux-stable
-#    cally-display --caller pin_user_pages --max-depth 4 --dir mm
+#    cally-display --caller pin_user_pages --max-depth 5 --dir mm
 #
 
 cally()
@@ -50,14 +50,19 @@ cally-display-help()
     echo "     [-s | --suffix <output file name suffix>]"
     echo "     [-d | --dir <directory to search for .expand files>]"
     echo "                  (this is a recursive search)"
-    echo "     [-x | --show] (show the generated graph in the default browser)"
-    echo "     [-m | --max-depth N] (passed through to cally.py)"
+    echo "     [-x | --no-show] (do not show the generated graph in the default browser)"
+    echo "     [-m | --max-depth N] (passed through to cally.py, default: $MAX_DEPTH)"
     echo
     echo "Examples:"
+    echo "    # Display 4 levels of callees in the default browser:"
+    echo "    cally-display --callee __get_user_pages"
+    echo
+    echo "    # Create a .png file with 3 levels, in the local mm/ directory,"
+    echo "    # and do not open up a browser:"
     echo "    cally-display -d mm -m 3 --callee __get_user_pages -x"
     echo
     echo "----------------------------------------------"
-    echo "cally.py --help:"
+    echo "cally.py --help (this is the lower-level tool's Help output):"
     cally --help
     echo "----------------------------------------------"
 }
@@ -72,12 +77,13 @@ cally-display()
     # Also, set --no-warnings by default.
 
     FUNCTION=
+    MAX_DEPTH=4
     SUFFIX=
     USER_SUFFIX=
     USER_PREFIX=
     PASS_THROUGH_OPTIONS=
     DIR="$PWD"
-    SHOW_IN_BROWSER=0
+    SHOW_IN_BROWSER=1
     HELP=0
 
     while(true); do
@@ -107,7 +113,7 @@ cally-display()
                 shift 2
             ;;
             "-x" | "--show" )
-                SHOW_IN_BROWSER=1;
+                SHOW_IN_BROWSER=0;
                 shift 1
             ;;
             "-d" | "--no-externs" )
@@ -119,7 +125,7 @@ cally-display()
                 shift 2
             ;;
             "-m" | "--max-depth" )
-                PASS_THROUGH_OPTIONS="$PASS_THROUGH_OPTIONS --max-depth $2";
+                MAX_DEPTH="$2";
                 shift 2
             ;;
             "-h" | "--help" )
@@ -159,9 +165,9 @@ cally-display()
 
     # TODO: check for dot(1)
 
-    FILENAME=${USER_PREFIX}${FUNCTION}_${SUFFIX}${USER_SUFFIX}.png
+    FILENAME=${USER_PREFIX}${FUNCTION}_${SUFFIX}_${MAX_DEPTH}_levels_${USER_SUFFIX}.png
 
-    CALLY_OPTIONS="$@ $PASS_THROUGH_OPTIONS --no-warnings"
+    CALLY_OPTIONS="$@ $PASS_THROUGH_OPTIONS --max-depth $MAX_DEPTH --no-warnings"
 
     echo "CALLY_OPTIONS:       $CALLY_OPTIONS"
     echo "output file:         $FILENAME"
