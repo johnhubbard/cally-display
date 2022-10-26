@@ -734,7 +734,7 @@ def main():
                 return 1
         print("strict digraph callgraph {")
         for callee in config.callee:
-            print('"{}" [color=blue, style=filled];'.format(callee))
+            print('"{}" [color=green, style=filled];'.format(callee))
             dump_path([], functions, callee,
                       max_depth=config.max_depth,
                       reverse_path=True,
