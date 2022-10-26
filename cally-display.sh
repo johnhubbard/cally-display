@@ -15,11 +15,6 @@
 #    cally-display --caller pin_user_pages --max-depth 5 --dir mm
 #
 
-cally()
-{
-    $CALLY "$@"
-}
-
 callyfiles()
 {
     dir=${1:-.}
