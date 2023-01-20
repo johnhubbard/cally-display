@@ -160,7 +160,7 @@ cally-display()
 
     # TODO: check for dot(1)
 
-    FILENAME=${USER_PREFIX}${FUNCTION}_${SUFFIX}_${MAX_DEPTH}_levels_${USER_SUFFIX}.png
+    FILENAME=${USER_PREFIX}${FUNCTION}_${SUFFIX}_${MAX_DEPTH}_levels${USER_SUFFIX}.png
 
     CALLY_OPTIONS="$@ $PASS_THROUGH_OPTIONS --max-depth $MAX_DEPTH --no-warnings"
 
