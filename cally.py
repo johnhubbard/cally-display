@@ -753,7 +753,7 @@ def main():
                 return 1
         print("strict digraph callgraph {")
         for caller in config.caller:
-            print('"{}" [color=blue, style=filled];'.format(caller))
+            print('"{}" [color=cyan, style=filled];'.format(caller))
             dump_path([], functions, caller,
                       max_depth=config.max_depth,
                       exclude=exclude_regex,
