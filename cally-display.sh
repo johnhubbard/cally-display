@@ -170,6 +170,6 @@ cally-display()
 
     callyfiles $DIR | xargs $CALLY $CALLY_OPTIONS | dot2png $FILENAME
     if [ $SHOW_IN_BROWSER -eq 1 ]; then
-        xdg-open $FILENAME
+        xdg-open $FILENAME 2>/dev/null
     fi
 }
